@@ -22,6 +22,18 @@ public class Address {
     @Column(name = "country", nullable = false, length = 75)
     private String country;
 
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
     public String getCountry() {
         return country;
     }

@@ -2,6 +2,9 @@ package eshopbackend.uztupyte1.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "customer")
 public class Customer {
@@ -24,6 +27,17 @@ public class Customer {
 
     @Column(name = "last_name", nullable = false)
     private String lastName;
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Address> addresses = new ArrayList<>();
+
+    public List<Address> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<Address> addresses) {
+        this.addresses = addresses;
+    }
 
     public String getLastName() {
         return lastName;
