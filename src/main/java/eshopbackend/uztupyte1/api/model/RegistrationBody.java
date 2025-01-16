@@ -1,12 +1,34 @@
 package eshopbackend.uztupyte1.api.model;
 
+import jakarta.validation.constraints.*;
+
 public class RegistrationBody {
 
+    @NotNull
+    @NotBlank
+    @Size(min = 4, max = 255)
     private String username;
+
+    @NotBlank
+    @NotNull
+    @Size(min = 6, max = 32)
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$")
     private String password;
-    private String email;
+
+    @NotBlank
+    @NotNull
+    @Email
+    private
+    String email;
+
+    @NotBlank
+    @NotNull
     private String firstName;
+
+    @NotBlank
+    @NotNull
     private String lastName;
+
 
     public String getEmail() {
         return email;
