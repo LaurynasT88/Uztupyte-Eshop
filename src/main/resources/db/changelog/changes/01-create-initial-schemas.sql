@@ -1,4 +1,4 @@
-create table customer
+create table if not exists customer
 (
     id         bigint auto_increment primary key,
     email      varchar(320)  not null,
@@ -24,10 +24,10 @@ create table if not exists address
 );
 
 
-create table product
+create table if not exists product
 (
     id                bigint auto_increment primary key,
-    long_drescription varchar(255) null,
+    long_description varchar(255) null,
     name              varchar(255) not null,
     price             double       not null,
     short_description varchar(255) not null,
@@ -35,7 +35,7 @@ create table product
 );
 
 
-create table inventory
+create table if not exists inventory
 (
     id         bigint auto_increment primary key,
     product_id bigint not null,
@@ -44,7 +44,7 @@ create table inventory
 );
 
 
-create table web_order
+create table if not exists web_order
 (
     id          bigint auto_increment primary key,
     address_id  bigint not null,
@@ -54,7 +54,7 @@ create table web_order
 );
 
 
-create table web_order_quantities
+create table if not exists web_order_quantities
 (
     id         bigint auto_increment primary key,
     quantity   int    not null,
