@@ -1,9 +1,9 @@
 databaseChangeLog:
   - changeSet:
       id: 1
-      author: developer
+      author: Laurynas
       changes:
         - sqlFile:
-            path: changes/01-create-user-table.sql
+            path: changes/01-customer-address-table.sql
             relativeToChangelogFile: true
 
