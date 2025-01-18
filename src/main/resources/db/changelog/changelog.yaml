@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Laurynas
+      changes:
+        - sqlFile:
+            path: changes/01-create-initial-schemas.sql
+            relativeToChangelogFile: true
+
