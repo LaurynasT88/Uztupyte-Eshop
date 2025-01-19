@@ -1,6 +1,6 @@
-package eshopbackend.uztupyte1.model.dao;
+package eshop.backend.uztupyte.model.dao;
 
-import eshopbackend.uztupyte1.model.Customer;
+import eshop.backend.uztupyte.model.Customer;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package eshopbackend.uztupyte1.exception;
+package eshop.backend.uztupyte.exception;
 
 public class UserAlreadyExistsException extends Exception {
 }

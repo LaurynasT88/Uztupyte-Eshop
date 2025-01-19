@@ -1,4 +1,4 @@
-package eshopbackend.uztupyte1;
+package eshop.backend.uztupyte;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

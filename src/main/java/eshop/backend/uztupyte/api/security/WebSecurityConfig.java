@@ -1,4 +1,4 @@
-package eshopbackend.uztupyte1.api.security;
+package eshop.backend.uztupyte.api.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

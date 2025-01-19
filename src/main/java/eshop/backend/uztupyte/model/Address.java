@@ -1,4 +1,4 @@
-package eshopbackend.uztupyte1.model;
+package eshop.backend.uztupyte.model;
 
 import jakarta.persistence.*;
 

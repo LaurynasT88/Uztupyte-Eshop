@@ -1,4 +1,4 @@
-package eshopbackend.uztupyte1.api.model;
+package eshop.backend.uztupyte.api.model;
 
 import jakarta.validation.constraints.*;
 

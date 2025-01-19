@@ -1,9 +1,9 @@
-package eshopbackend.uztupyte1.service;
+package eshop.backend.uztupyte.service;
 
-import eshopbackend.uztupyte1.api.model.RegistrationBody;
-import eshopbackend.uztupyte1.exception.UserAlreadyExistsException;
-import eshopbackend.uztupyte1.model.Customer;
-import eshopbackend.uztupyte1.model.dao.CustomerDAO;
+import eshop.backend.uztupyte.api.model.RegistrationBody;
+import eshop.backend.uztupyte.exception.UserAlreadyExistsException;
+import eshop.backend.uztupyte.model.Customer;
+import eshop.backend.uztupyte.model.dao.CustomerDAO;
 import org.springframework.stereotype.Service;
 
 
