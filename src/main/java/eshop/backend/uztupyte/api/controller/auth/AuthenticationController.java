@@ -1,8 +1,8 @@
-package eshopbackend.uztupyte1.api.controller.auth;
+package eshop.backend.uztupyte.api.controller.auth;
 
-import eshopbackend.uztupyte1.api.model.RegistrationBody;
-import eshopbackend.uztupyte1.exception.UserAlreadyExistsException;
-import eshopbackend.uztupyte1.service.CustomerService;
+import eshop.backend.uztupyte.api.model.RegistrationBody;
+import eshop.backend.uztupyte.exception.UserAlreadyExistsException;
+import eshop.backend.uztupyte.service.CustomerService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

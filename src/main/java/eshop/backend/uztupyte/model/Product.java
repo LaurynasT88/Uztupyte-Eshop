@@ -1,4 +1,4 @@
-package eshopbackend.uztupyte1.model;
+package eshop.backend.uztupyte.model;
 
 import jakarta.persistence.*;
 
@@ -16,10 +16,10 @@ public class Product {
     @Column(name = "short_description", nullable = false)
     private String shortDescription;
 
-    @Column(name = "long_drescription")
-    private String longDrescription;
+    @Column(name = "long_description")
+    private String longDescription;
 
-    @Column(name = "price", nullable = false)
+    @Column(name = "price", nullable = false, columnDefinition = "double")
     private Double price;
 
     @OneToOne(mappedBy = "product", cascade = CascadeType.REMOVE, optional = false, orphanRemoval = true)
@@ -41,12 +41,12 @@ public class Product {
         this.price = price;
     }
 
-    public String getLongDrescription() {
-        return longDrescription;
+    public String getLongDescription() {
+        return longDescription;
     }
 
-    public void setLongDrescription(String longDrescription) {
-        this.longDrescription = longDrescription;
+    public void setLongDescription(String longDrescription) {
+        this.longDescription = longDrescription;
     }
 
     public String getShortDescription() {
