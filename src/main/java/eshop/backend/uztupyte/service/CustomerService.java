@@ -11,12 +11,13 @@ import org.springframework.stereotype.Service;
 public class CustomerService {
 
     private CustomerDAO customerDAO;
+    private EncryptionService encryptionService;
 
 
-    public CustomerService(CustomerDAO customerDAO) {
+    public CustomerService(CustomerDAO customerDAO, EncryptionService encryptionService) {
 
         this.customerDAO = customerDAO;
-
+        this.encryptionService = encryptionService;
     }
 
 
@@ -32,10 +33,8 @@ public class CustomerService {
         customer.setFirstName(registrationBody.getFirstName());
         customer.setLastName(registrationBody.getLastName());
         customer.setUsername(registrationBody.getUsername());
-        //TODO: Encrypt passwords!!
-        customer.setPassword(registrationBody.getPassword());
-        customer = customerDAO.save(customer);
-        return customer;
+        customer.setPassword(encryptionService.encryptPassword(registrationBody.getPassword()));
+        return customerDAO.save(customer);
 
     }
 
