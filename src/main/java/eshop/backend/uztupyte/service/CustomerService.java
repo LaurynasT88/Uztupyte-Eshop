@@ -22,6 +22,13 @@ public class CustomerService {
         this.customerDAO = customerDAO;
         this.encryptionService = encryptionService;
         this.jwtService = jwtService;
+
+
+
+    public CustomerService(CustomerDAO customerDAO, EncryptionService encryptionService) {
+
+        this.customerDAO = customerDAO;
+        this.encryptionService = encryptionService;
     }
 
 
