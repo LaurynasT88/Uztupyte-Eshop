@@ -24,11 +24,6 @@ public class CustomerService {
         this.jwtService = jwtService;
 
 
-
-    public CustomerService(CustomerDAO customerDAO, EncryptionService encryptionService) {
-
-        this.customerDAO = customerDAO;
-        this.encryptionService = encryptionService;
     }
 
 
@@ -49,11 +44,11 @@ public class CustomerService {
 
     }
 
-    public String loginCustomer(LoginBody loginBody)  {
+    public String loginCustomer(LoginBody loginBody) {
         Optional<Customer> opCustomer = customerDAO.findByUsernameIgnoreCase(loginBody.getUsername());
-        if(opCustomer.isPresent()) {
+        if (opCustomer.isPresent()) {
             Customer customer = opCustomer.get();
-            if(encryptionService.verifyPassword(loginBody.getPassword(), customer.getPassword())) {
+            if (encryptionService.verifyPassword(loginBody.getPassword(), customer.getPassword())) {
                 return jwtService.generateJWT(customer);
             }
         }

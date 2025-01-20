@@ -8,11 +8,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class EncryptionService {
 
-
-@Value("${encryption.salt.rounds}")
-private int saltRounds;
-
-
     @Value("${encryption.salt.rounds}")
     private int saltRounds;
 
@@ -22,10 +17,11 @@ private int saltRounds;
     public void postConstruct() {
         salt = BCrypt.gensalt(saltRounds);
     }
-  public String encryptPassword(String password) {
+
+
+    public String encryptPassword(String password) {
         return BCrypt.hashpw(password, salt);
     }
-
 
 
     public boolean verifyPassword(String password, String hash) {
@@ -33,11 +29,3 @@ private int saltRounds;
     }
 
 }
-
-    public boolean verifyPassword(String password, String hash ) {
-        return BCrypt.checkpw(password, hash);
-    }
-
-
-}
-
