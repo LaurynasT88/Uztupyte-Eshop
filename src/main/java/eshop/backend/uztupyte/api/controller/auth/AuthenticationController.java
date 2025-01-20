@@ -1,5 +1,7 @@
 package eshop.backend.uztupyte.api.controller.auth;
 
+import eshop.backend.uztupyte.api.model.LoginBody;
+import eshop.backend.uztupyte.api.model.LoginResponse;
 import eshop.backend.uztupyte.api.model.RegistrationBody;
 import eshop.backend.uztupyte.exception.UserAlreadyExistsException;
 import eshop.backend.uztupyte.service.CustomerService;
@@ -29,6 +31,19 @@ public class AuthenticationController {
            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> loginCustomer(@Valid @RequestBody LoginBody loginBody) {
+        String jwt = customerService.loginCustomer(loginBody);
+        if (jwt == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }else{
+            LoginResponse response = new LoginResponse();
+            response.setJwt(jwt);
+            return ResponseEntity.ok(response);
+
+        }
     }
 
 }
