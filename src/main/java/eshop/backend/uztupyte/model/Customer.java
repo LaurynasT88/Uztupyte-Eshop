@@ -1,5 +1,6 @@
 package eshop.backend.uztupyte.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ public class Customer {
     @Column(name = "username", nullable = false, unique = true, length = 100)
     private String username;
 
+    @JsonIgnore
     @Column(name = "password", nullable = false, length = 1000)
     private String password;
 
@@ -28,6 +30,7 @@ public class Customer {
     @Column(name = "last_name")
     private String lastName;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "customer", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Address> addresses = new ArrayList<>();
 

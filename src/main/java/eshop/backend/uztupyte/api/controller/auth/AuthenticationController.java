@@ -4,10 +4,12 @@ import eshop.backend.uztupyte.api.model.LoginBody;
 import eshop.backend.uztupyte.api.model.LoginResponse;
 import eshop.backend.uztupyte.api.model.RegistrationBody;
 import eshop.backend.uztupyte.exception.UserAlreadyExistsException;
+import eshop.backend.uztupyte.model.Customer;
 import eshop.backend.uztupyte.service.CustomerService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -44,6 +46,11 @@ public class AuthenticationController {
             return ResponseEntity.ok(response);
 
         }
+    }
+
+    @GetMapping("/me")
+    public Customer getLoggedInCustomer(@AuthenticationPrincipal Customer customer) {
+        return customer;
     }
 
 }
