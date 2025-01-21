@@ -1,4 +1,4 @@
-package eshop.backend.uztupyte.api.order;
+package eshop.backend.uztupyte.api.controller.order;
 
 
 import eshop.backend.uztupyte.model.Customer;

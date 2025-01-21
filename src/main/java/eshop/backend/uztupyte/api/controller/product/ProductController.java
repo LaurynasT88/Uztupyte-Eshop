@@ -1,4 +1,4 @@
-package eshop.backend.uztupyte.api.product;
+package eshop.backend.uztupyte.api.controller.product;
 
 
 import eshop.backend.uztupyte.model.Product;
