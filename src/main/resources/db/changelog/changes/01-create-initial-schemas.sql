@@ -39,6 +39,7 @@ create table if not exists inventory
 (
     id         bigint auto_increment primary key,
     product_id bigint not null,
+    quantity   int default 0 not null,
     constraint unique_inventory_product_id unique (product_id),
     constraint fk_product_id foreign key (product_id) references product (id)
 );
