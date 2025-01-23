@@ -22,6 +22,8 @@ public class JWTService {
 
     private Algorithm algorithm;
     private static final String USERNAME_KEY = "USERNAME";
+    private static final String EMAIL_KEY = "EMAIL";
+
 
     @PostConstruct
     public void postConstruct() {
@@ -30,8 +32,16 @@ public class JWTService {
 
     public String generateJWT(Customer customer) {
         return JWT.create()
-                .withClaim(USERNAME_KEY , customer.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 1_000 * expiryInSeconds))
+                .withClaim(USERNAME_KEY, customer.getUsername())
+                .withExpiresAt(new Date(System.currentTimeMillis() + (1000 * expiryInSeconds)))
+                .withIssuer(issuer)
+                .sign(algorithm);
+    }
+
+    public String generateVerificationJWT(Customer customer) {
+        return JWT.create()
+                .withClaim(EMAIL_KEY , customer.getEmail())
+                .withExpiresAt(new Date(System.currentTimeMillis() + (1000 * expiryInSeconds)))
                 .withIssuer(issuer)
                 .sign(algorithm);
     }
