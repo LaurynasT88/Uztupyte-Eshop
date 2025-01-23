@@ -27,7 +27,7 @@ create table if not exists address
 create table if not exists product
 (
     id                bigint auto_increment primary key,
-    long_description varchar(255) null,
+    long_description  varchar(255) null,
     name              varchar(255) not null,
     price             double       not null,
     short_description varchar(255) not null,
