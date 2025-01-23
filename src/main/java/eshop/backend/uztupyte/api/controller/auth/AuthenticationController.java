@@ -3,7 +3,9 @@ package eshop.backend.uztupyte.api.controller.auth;
 import eshop.backend.uztupyte.api.model.LoginBody;
 import eshop.backend.uztupyte.api.model.LoginResponse;
 import eshop.backend.uztupyte.api.model.RegistrationBody;
+import eshop.backend.uztupyte.exception.EmailFailureException;
 import eshop.backend.uztupyte.exception.UserAlreadyExistsException;
+import eshop.backend.uztupyte.exception.UserNotVerifiedException;
 import eshop.backend.uztupyte.model.Customer;
 import eshop.backend.uztupyte.service.CustomerService;
 import jakarta.validation.Valid;
@@ -28,25 +30,53 @@ public class AuthenticationController {
         try {
             customerService.registerCustomer(registrationBody);
             return ResponseEntity.ok().build();
-
         } catch (UserAlreadyExistsException ex) {
-           return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        } catch (EmailFailureException ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
     }
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> loginCustomer(@Valid @RequestBody LoginBody loginBody) {
-        String jwt = customerService.loginCustomer(loginBody);
+        String jwt = null;
+        try {
+            jwt = customerService.loginCustomer(loginBody);
+        } catch (UserNotVerifiedException e) {
+            LoginResponse response = new LoginResponse();
+            response.setSuccess(false);
+            String reason = "USER_NOT_VERIFIED";
+            if (e.isNewEmailSent()) {
+                reason += "_EMAIL_RESENT";
+            }
+            response.setFailureReason(reason);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        } catch (EmailFailureException ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
         if (jwt == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }else{
+        } else {
             LoginResponse response = new LoginResponse();
             response.setJwt(jwt);
+            response.setSuccess(true);
             return ResponseEntity.ok(response);
 
         }
     }
+
+    @PostMapping("/verify")
+    public ResponseEntity verifyEmail(@RequestParam String token) {
+        if (customerService.verifyCustomer(token)) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+
+
+    }
+
 
     @GetMapping("/me")
     public Customer getLoggedInCustomer(@AuthenticationPrincipal Customer customer) {

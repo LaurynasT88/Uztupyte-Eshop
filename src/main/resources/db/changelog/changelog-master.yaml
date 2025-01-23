@@ -6,4 +6,3 @@ databaseChangeLog:
         - sqlFile:
             path: changes/01-create-initial-schemas.sql
             relativeToChangelogFile: true
-
