@@ -39,15 +39,15 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> loginCustomer(@Valid @RequestBody LoginBody loginBody) {
+    public ResponseEntity<LoginResponse> loginUser(@Valid @RequestBody LoginBody loginBody) {
         String jwt = null;
         try {
             jwt = customerService.loginCustomer(loginBody);
-        } catch (UserNotVerifiedException e) {
+        } catch (UserNotVerifiedException ex) {
             LoginResponse response = new LoginResponse();
             response.setSuccess(false);
             String reason = "USER_NOT_VERIFIED";
-            if (e.isNewEmailSent()) {
+            if (ex.isNewEmailSent()) {
                 reason += "_EMAIL_RESENT";
             }
             response.setFailureReason(reason);
@@ -62,7 +62,6 @@ public class AuthenticationController {
             response.setJwt(jwt);
             response.setSuccess(true);
             return ResponseEntity.ok(response);
-
         }
     }
 
