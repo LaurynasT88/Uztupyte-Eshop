@@ -5,9 +5,11 @@ import com.icegreen.greenmail.junit5.GreenMailExtension;
 import com.icegreen.greenmail.util.ServerSetupTest;
 import eshop.backend.uztupyte.api.model.LoginBody;
 import eshop.backend.uztupyte.api.model.RegistrationBody;
+import eshop.backend.uztupyte.api.model.VerificationToken;
 import eshop.backend.uztupyte.exception.EmailFailureException;
 import eshop.backend.uztupyte.exception.UserAlreadyExistsException;
 import eshop.backend.uztupyte.exception.UserNotVerifiedException;
+import eshop.backend.uztupyte.model.dao.VerificationTokenDAO;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
@@ -16,6 +18,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.List;
 
 @SpringBootTest
 public class UserServiceTest {
@@ -27,6 +31,8 @@ public class UserServiceTest {
 
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private VerificationTokenDAO  verificationTokenDAO;
 
     @Test
     @Transactional
@@ -77,6 +83,27 @@ public class UserServiceTest {
             Assertions.assertFalse(ex.isNewEmailSent(), "Email verification should not be resent.");
             Assertions.assertEquals(1, greenMailExtension.getReceivedMessages().length);
         }
+    }
+
+    @Test
+    @Transactional
+    public void testVerifyUser() throws EmailFailureException {
+        Assertions.assertFalse(customerService.verifyCustomer("Bad Token"),"Token that is bad or does not exist should return false. " );
+        LoginBody body = new LoginBody();
+        body.setUsername("UserB");
+        body.setPassword("PasswordB123");
+        try {
+            customerService.loginCustomer(body);
+            Assertions.assertTrue(false, "User should not have email verified.");
+        } catch (UserNotVerifiedException ex) {
+            List<VerificationToken> tokens = verificationTokenDAO.findByCustomer_IdOrderByIdDesc(2L);
+            String token = tokens.get(0).getToken();
+            Assertions.assertTrue(customerService.verifyCustomer(token), "Token should be valid");
+            Assertions.assertNotNull(token, "The user should now be verified");
+
+
+        }
+
     }
 
 

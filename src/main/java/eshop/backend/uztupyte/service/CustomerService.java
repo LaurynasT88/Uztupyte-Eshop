@@ -10,7 +10,6 @@ import eshop.backend.uztupyte.model.Customer;
 import eshop.backend.uztupyte.model.dao.CustomerDAO;
 import eshop.backend.uztupyte.model.dao.VerificationTokenDAO;
 import jakarta.transaction.Transactional;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
