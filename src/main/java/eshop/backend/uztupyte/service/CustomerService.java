@@ -84,9 +84,10 @@ public class CustomerService {
                         VerificationToken verificationToken = createVerificationToken(customer);
                         verificationTokenDAO.save(verificationToken);
                         emailService.sendVerificationEmail(verificationToken);
-                        throw new UserNotVerifiedException(resend);
+
 
                     }
+                    throw new UserNotVerifiedException(resend);
                 }
 
             }
