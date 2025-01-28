@@ -21,8 +21,8 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable()) // Disable CSRF
-                .cors(cors -> cors.disable()) // Disable CORS
+        http.csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.disable())
                 .addFilterBefore(jwtRequestFilter, org.springframework.security.web.access.intercept.AuthorizationFilter.class) // Ensure the JWT filter is applied before AuthorizationFilter
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/product", "/auth/register", "/auth/login","/auth/verify").permitAll() // Allow unauthenticated access to these endpoints
