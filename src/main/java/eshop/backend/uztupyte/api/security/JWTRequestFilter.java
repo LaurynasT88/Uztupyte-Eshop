@@ -42,9 +42,11 @@ public class JWTRequestFilter extends OncePerRequestFilter {
                 Optional<Customer> opUser = customerDAO.findByUsernameIgnoreCase(username);
              if (opUser.isPresent()) {
                  Customer customer = opUser.get();
-                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(customer, null, new ArrayList<>());
-                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                 if(customer.isEmailVerified()) {
+                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(customer, null, new ArrayList<>());
+                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                     SecurityContextHolder.getContext().setAuthentication(authentication);
+                 }
              }
             }catch (JWTDecodeException ex){
 
