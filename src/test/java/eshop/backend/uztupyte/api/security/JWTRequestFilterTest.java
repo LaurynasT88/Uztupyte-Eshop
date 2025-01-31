@@ -1,8 +1,12 @@
 package eshop.backend.uztupyte.api.security;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
 import eshop.backend.uztupyte.model.Customer;
 import eshop.backend.uztupyte.model.dao.CustomerDAO;
 import eshop.backend.uztupyte.service.JWTService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -60,6 +64,18 @@ public class JWTRequestFilterTest {
         String token = jwtService.generateJWT(customer);
         mvc.perform(get(AUTHENTICATED_PATH).header("Authorization", "Bearer " + token))
                 .andExpect(status().is(HttpStatus.OK.value()));
+    }
+
+    @Test
+    public void testJWTNotGeneratedByMe(){
+        String token =
+        JWT.create().withClaim("USERNAME", "UserA").sign(Algorithm.HMAC256(
+                "NotTheRealSecret"));
+        Assertions.assertThrows(SignatureVerificationException.class,
+                () -> jwtService.getUsername(token));
+
+
+
     }
 
 }
