@@ -3,13 +3,16 @@ package eshop.backend.uztupyte.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import eshop.backend.uztupyte.api.model.VerificationToken;
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
 @Table(name = "customer")
-public class Customer {
+public class Customer implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -35,6 +38,7 @@ public class Customer {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Address> addresses = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id desc")
     private List<VerificationToken> verificationTokens = new ArrayList<>();
@@ -90,6 +94,11 @@ public class Customer {
         this.email = email;
     }
 
+    @JsonIgnore
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
+
     public String getPassword() {
         return password;
     }
@@ -100,6 +109,26 @@ public class Customer {
 
     public String getUsername() {
         return username;
+    }
+
+    @JsonIgnore
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @JsonIgnore
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @JsonIgnore
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @JsonIgnore
+    public boolean isEnabled() {
+        return true;
     }
 
     public void setUsername(String username) {
