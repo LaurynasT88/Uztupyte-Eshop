@@ -1,9 +1,11 @@
 package eshop.backend.uztupyte.service;
 
 import eshop.backend.uztupyte.api.model.LoginBody;
+import eshop.backend.uztupyte.api.model.PasswordResetBody;
 import eshop.backend.uztupyte.api.model.RegistrationBody;
-import eshop.backend.uztupyte.api.model.VerificationToken;
+import eshop.backend.uztupyte.model.VerificationToken;
 import eshop.backend.uztupyte.exception.EmailFailureException;
+import eshop.backend.uztupyte.exception.EmailNotFoundException;
 import eshop.backend.uztupyte.exception.UserAlreadyExistsException;
 import eshop.backend.uztupyte.exception.UserNotVerifiedException;
 import eshop.backend.uztupyte.model.Customer;
@@ -108,6 +110,27 @@ public class CustomerService {
             }
         }
         return false;
+    }
+
+    public void forgotPassword(String email) throws EmailNotFoundException, EmailFailureException {
+        Optional<Customer> opCustomer = customerDAO.findByEmailIgnoreCase(email);
+        if (opCustomer.isPresent()) {
+            Customer customer = opCustomer.get();
+            String token = jwtService.generatePasswordResetJWT(customer);
+            emailService.sendPasswordResetEmail(customer, token);
+
+        }else{
+            throw new EmailNotFoundException();
+        }
+    }
+    public void resetPassword(PasswordResetBody body){
+        String email = jwtService.getResetPasswordEmail(body.getToken());
+        Optional<Customer> opCustomer = customerDAO.findByEmailIgnoreCase(email);
+        if (opCustomer.isPresent()) {
+            Customer customer = opCustomer.get();
+            customer.setPassword(encryptionService.encryptPassword(body.getPassword()));
+            customerDAO.save(customer);
+        }
     }
 
 }

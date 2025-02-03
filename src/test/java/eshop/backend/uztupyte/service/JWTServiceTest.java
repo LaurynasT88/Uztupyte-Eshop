@@ -3,6 +3,7 @@ package eshop.backend.uztupyte.service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.MissingClaimException;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
 import eshop.backend.uztupyte.model.Customer;
 import eshop.backend.uztupyte.model.dao.CustomerDAO;
 import org.junit.jupiter.api.Assertions;
@@ -28,27 +29,61 @@ public class JWTServiceTest {
 
     @Test
     public void testVerificationTokenNotUsableForLogin() {
-        Customer customer = customerDAO.findByUsernameIgnoreCase("UserA").get();
-        String token = jwtService.generateVerificationJWT(customer);
-        Assertions.assertNull(jwtService.getUsername(token), "Verification token should not contain username. ");
-
-
-
+        Customer user = customerDAO.findByUsernameIgnoreCase("UserA").get();
+        String token = jwtService.generateVerificationJWT(user);
+        Assertions.assertNull(jwtService.getUsername(token), "Verification token should not contain username.");
     }
+
+
     @Test
-    public void testAuthTokenReturnsUsername(){
-        Customer customer = customerDAO.findByUsernameIgnoreCase("UserA").get();
-        String token = jwtService.generateJWT(customer);
-        Assertions.assertEquals(customer.getUsername(), jwtService.getUsername(token), "Token for auth should contain username. ");
-
-
+    public void testAuthTokenReturnsUsername() {
+        Customer user = customerDAO.findByUsernameIgnoreCase("UserA").get();
+        String token = jwtService.generateJWT(user);
+        Assertions.assertEquals(user.getUsername(), jwtService.getUsername(token), "Token for auth should contain users username.");
     }
 
     @Test
-    public void testJWTCorrectlySignedNoIssuer(){
+    public void testLoginJWTNotGeneratedByUs() {
+        String token =
+                JWT.create().withClaim("USERNAME", "UserA").sign(Algorithm.HMAC256(
+                        "NotTheRealSecret"));
+        Assertions.assertThrows(SignatureVerificationException.class,
+                () -> jwtService.getUsername(token));
+    }
+
+    @Test
+    public void testLoginJWTCorrectlySignedNoIssuer() {
         String token =
                 JWT.create().withClaim("USERNAME", "UserA")
                         .sign(Algorithm.HMAC256(algorithmKey));
-        Assertions.assertThrows(MissingClaimException.class, () -> jwtService.getUsername(token));
+        Assertions.assertThrows(MissingClaimException.class,
+                () -> jwtService.getUsername(token));
+    }
+
+    @Test
+    public void testResetPasswordJWTNotGeneratedByUs() {
+        String token =
+                JWT.create().withClaim("RESET_PASSWORD_EMAIL", "UserA@junit.com").sign(Algorithm.HMAC256(
+                        "NotTheRealSecret"));
+        Assertions.assertThrows(SignatureVerificationException.class,
+                () -> jwtService.getResetPasswordEmail(token));
+    }
+
+    @Test
+    public void testResetPasswordJWTCorrectlySignedNoIssuer() {
+        String token =
+                JWT.create().withClaim("RESET_PASSWORD_EMAIL", "UserA@junit.com")
+                        .sign(Algorithm.HMAC256(algorithmKey));
+        Assertions.assertThrows(MissingClaimException.class,
+                () -> jwtService.getResetPasswordEmail(token));
+    }
+
+    @Test
+    public void testPasswordResetToken() {
+        Customer user = customerDAO.findByUsernameIgnoreCase("UserA").get();
+        String token = jwtService.generatePasswordResetJWT(user);
+        Assertions.assertEquals(user.getEmail(),
+                jwtService.getResetPasswordEmail(token), "Email should match inside " +
+                        "JWT.");
     }
 }

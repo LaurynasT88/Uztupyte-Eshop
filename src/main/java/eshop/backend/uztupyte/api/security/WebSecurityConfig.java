@@ -2,8 +2,6 @@ package eshop.backend.uztupyte.api.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -25,7 +23,8 @@ public class WebSecurityConfig {
                 .cors(cors -> cors.disable())
                 .addFilterBefore(jwtRequestFilter, org.springframework.security.web.access.intercept.AuthorizationFilter.class) // Ensure the JWT filter is applied before AuthorizationFilter
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/product", "/auth/register", "/auth/login","/auth/verify", "/error").permitAll() // Allow unauthenticated access to these endpoints
+                        .requestMatchers("/product", "/auth/register", "/auth/login",
+                                "/auth/verify", "/auth/forgot" , "/auth/reset", "/error").permitAll() // Allow unauthenticated access to these endpoints
                         .anyRequest().authenticated() // Require authentication for all other requests
                 );
         return http.build();

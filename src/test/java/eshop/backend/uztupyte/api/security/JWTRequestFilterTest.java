@@ -67,7 +67,7 @@ public class JWTRequestFilterTest {
     }
 
     @Test
-    public void testJWTNotGeneratedByMe(){
+    public void testLoginJWTNotGeneratedByMe(){
         String token =
         JWT.create().withClaim("USERNAME", "UserA").sign(Algorithm.HMAC256(
                 "NotTheRealSecret"));
