@@ -1,7 +1,7 @@
 package eshop.backend.uztupyte.model.dao;
 
-import eshop.backend.uztupyte.api.model.VerificationToken;
 import eshop.backend.uztupyte.model.Customer;
+import eshop.backend.uztupyte.model.VerificationToken;
 import org.springframework.data.repository.ListCrudRepository;
 
 import java.util.List;

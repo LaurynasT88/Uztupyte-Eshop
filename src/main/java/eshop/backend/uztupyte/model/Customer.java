@@ -1,7 +1,6 @@
 package eshop.backend.uztupyte.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import eshop.backend.uztupyte.api.model.VerificationToken;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

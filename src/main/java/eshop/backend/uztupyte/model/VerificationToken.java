@@ -1,6 +1,5 @@
-package eshop.backend.uztupyte.api.model;
+package eshop.backend.uztupyte.model;
 
-import eshop.backend.uztupyte.model.Customer;
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;

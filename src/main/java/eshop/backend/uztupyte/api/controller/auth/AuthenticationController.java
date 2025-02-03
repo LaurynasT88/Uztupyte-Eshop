@@ -2,8 +2,10 @@ package eshop.backend.uztupyte.api.controller.auth;
 
 import eshop.backend.uztupyte.api.model.LoginBody;
 import eshop.backend.uztupyte.api.model.LoginResponse;
+import eshop.backend.uztupyte.api.model.PasswordResetBody;
 import eshop.backend.uztupyte.api.model.RegistrationBody;
 import eshop.backend.uztupyte.exception.EmailFailureException;
+import eshop.backend.uztupyte.exception.EmailNotFoundException;
 import eshop.backend.uztupyte.exception.UserAlreadyExistsException;
 import eshop.backend.uztupyte.exception.UserNotVerifiedException;
 import eshop.backend.uztupyte.model.Customer;
@@ -80,6 +82,24 @@ public class AuthenticationController {
     @GetMapping("/me")
     public Customer getLoggedInCustomer(@AuthenticationPrincipal Customer customer) {
         return customer;
+    }
+
+    @PostMapping("/forgot")
+    public ResponseEntity forgotPassword(@RequestParam String email) {
+        try {
+            customerService.forgotPassword(email);
+            return ResponseEntity.ok().build();
+        } catch (EmailNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (EmailFailureException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PostMapping("/reset")
+    public ResponseEntity resetPassword(@Valid @RequestBody PasswordResetBody body) {
+        customerService.resetPassword(body);
+        return ResponseEntity.ok().build();
     }
 
 }
