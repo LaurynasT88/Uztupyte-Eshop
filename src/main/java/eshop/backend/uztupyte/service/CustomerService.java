@@ -14,6 +14,7 @@ import eshop.backend.uztupyte.model.dao.VerificationTokenDAO;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.security.Permission;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
@@ -131,6 +132,10 @@ public class CustomerService {
             customer.setPassword(encryptionService.encryptPassword(body.getPassword()));
             customerDAO.save(customer);
         }
+    }
+
+    public boolean userHasPermissionToUser(Customer customer, Long id) {
+        return  customer.getId() == id;
     }
 
 }
