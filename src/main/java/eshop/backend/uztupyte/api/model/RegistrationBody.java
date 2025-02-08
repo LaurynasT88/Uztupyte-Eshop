@@ -18,8 +18,7 @@ public class RegistrationBody {
     @NotBlank
     @NotNull
     @Email
-    private
-    String email;
+    private String email;
 
     @NotBlank
     @NotNull

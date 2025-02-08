@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class JWTService {
@@ -36,6 +37,7 @@ public class JWTService {
     public String generateJWT(Customer customer) {
         return JWT.create()
                 .withClaim(USERNAME_KEY, customer.getUsername())
+                .withClaim("ROLES" , List.of("ADMIN"))
                 .withExpiresAt(new Date(System.currentTimeMillis() + (1000 * expiryInSeconds)))
                 .withIssuer(issuer)
                 .sign(algorithm);

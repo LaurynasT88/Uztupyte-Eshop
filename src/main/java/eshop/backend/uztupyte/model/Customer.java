@@ -37,6 +37,9 @@ public class Customer implements UserDetails {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Address> addresses = new ArrayList<>();
 
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<UserRole> roles = new ArrayList<>();
+
     @JsonIgnore
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id desc")
@@ -44,6 +47,14 @@ public class Customer implements UserDetails {
 
     @Column(name = "email_verified", nullable = false)
     private Boolean emailVerified = false;
+
+    public List<UserRole> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<UserRole> roles) {
+        this.roles = roles;
+    }
 
     public Boolean isEmailVerified() {
         return emailVerified;
