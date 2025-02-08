@@ -56,7 +56,7 @@ public class CustomerService implements Loggable {
         customer.setFirstName(registrationBody.getFirstName());
         customer.setLastName(registrationBody.getLastName());
         customer.setUsername(registrationBody.getUsername());
-        customer.setPassword(encryptionService.encryptPassword(registrationBody.getPassword()))
+        customer.setPassword(encryptionService.encryptPassword(registrationBody.getPassword()));
         VerificationToken verificationToken = createVerificationToken(customer);
         emailService.sendVerificationEmail(verificationToken);
 
