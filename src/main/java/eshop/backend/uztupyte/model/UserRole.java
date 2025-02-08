@@ -11,7 +11,7 @@ public class UserRole {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, columnDefinition = "VARCHAR(50)")
     private RoleName name;
 
     @ManyToOne
