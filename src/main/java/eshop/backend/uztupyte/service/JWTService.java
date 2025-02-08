@@ -28,7 +28,6 @@ public class JWTService {
     private static final String RESET_PASSWORD_EMAIL_KEY = "RESET_PASSWORD_EMAIL";
 
 
-
     @PostConstruct
     public void postConstruct() {
         algorithm = Algorithm.HMAC256(algorithmKey);
@@ -37,10 +36,17 @@ public class JWTService {
     public String generateJWT(Customer customer) {
         return JWT.create()
                 .withClaim(USERNAME_KEY, customer.getUsername())
-                .withClaim("ROLES" , List.of("ADMIN"))
+                .withClaim("ROLES", getRoles(customer))
                 .withExpiresAt(new Date(System.currentTimeMillis() + (1000 * expiryInSeconds)))
                 .withIssuer(issuer)
                 .sign(algorithm);
+    }
+
+    private static List<String> getRoles(Customer customer) {
+
+        return customer.getRoles().stream()
+                .map(a -> a.getName().name())
+                .toList();
     }
 
     public String generatePasswordResetJWT(Customer customer) {
