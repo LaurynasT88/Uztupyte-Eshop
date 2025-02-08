@@ -3,19 +3,19 @@ package eshop.backend.uztupyte.service;
 import eshop.backend.uztupyte.api.model.LoginBody;
 import eshop.backend.uztupyte.api.model.PasswordResetBody;
 import eshop.backend.uztupyte.api.model.RegistrationBody;
-import eshop.backend.uztupyte.model.VerificationToken;
 import eshop.backend.uztupyte.exception.EmailFailureException;
 import eshop.backend.uztupyte.exception.EmailNotFoundException;
 import eshop.backend.uztupyte.exception.UserAlreadyExistsException;
 import eshop.backend.uztupyte.exception.UserNotVerifiedException;
 import eshop.backend.uztupyte.model.Customer;
+import eshop.backend.uztupyte.model.UserRole;
+import eshop.backend.uztupyte.model.VerificationToken;
 import eshop.backend.uztupyte.model.dao.CustomerDAO;
 import eshop.backend.uztupyte.model.dao.VerificationTokenDAO;
 import eshop.backend.uztupyte.util.Loggable;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.security.Permission;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
@@ -56,11 +56,17 @@ public class CustomerService implements Loggable {
         customer.setFirstName(registrationBody.getFirstName());
         customer.setLastName(registrationBody.getLastName());
         customer.setUsername(registrationBody.getUsername());
-        customer.setPassword(encryptionService.encryptPassword(registrationBody.getPassword()));
+        customer.setPassword(encryptionService.encryptPassword(registrationBody.getPassword()))
         VerificationToken verificationToken = createVerificationToken(customer);
         emailService.sendVerificationEmail(verificationToken);
-        return customerDAO.save(customer);
 
+        Customer savedCustomer = customerDAO.save(customer);
+        UserRole userRole = new UserRole();
+        userRole.setName(registrationBody.getRole());
+        userRole.setCustomer(savedCustomer);
+        savedCustomer.getRoles().add(userRole);
+
+        return customerDAO.save(savedCustomer);
     }
 
     private VerificationToken createVerificationToken(Customer customer) {
@@ -124,11 +130,12 @@ public class CustomerService implements Loggable {
             String token = jwtService.generatePasswordResetJWT(customer);
             emailService.sendPasswordResetEmail(customer, token);
 
-        }else{
+        } else {
             throw new EmailNotFoundException();
         }
     }
-    public void resetPassword(PasswordResetBody body){
+
+    public void resetPassword(PasswordResetBody body) {
         String email = jwtService.getResetPasswordEmail(body.getToken());
         Optional<Customer> opCustomer = customerDAO.findByEmailIgnoreCase(email);
         if (opCustomer.isPresent()) {
@@ -139,7 +146,7 @@ public class CustomerService implements Loggable {
     }
 
     public boolean userHasPermissionToUser(Customer customer, Long id) {
-        return  customer.getId() == id;
+        return customer.getId() == id;
     }
 
 }

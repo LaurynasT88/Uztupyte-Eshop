@@ -10,11 +10,12 @@ public class UserRole {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "name", nullable = false)
     private RoleName name;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id")
+    @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
     public Customer getCustomer() {
@@ -33,4 +34,11 @@ public class UserRole {
         this.id = id;
     }
 
+    public void setName(RoleName name) {
+        this.name = name;
+    }
+
+    public RoleName getName() {
+        return name;
+    }
 }
