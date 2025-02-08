@@ -10,6 +10,7 @@ import eshop.backend.uztupyte.exception.UserAlreadyExistsException;
 import eshop.backend.uztupyte.exception.UserNotVerifiedException;
 import eshop.backend.uztupyte.model.Customer;
 import eshop.backend.uztupyte.service.CustomerService;
+import eshop.backend.uztupyte.util.Loggable;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
-public class AuthenticationController {
+public class AuthenticationController implements Loggable {
 
 
     private CustomerService customerService;
@@ -53,6 +54,7 @@ public class AuthenticationController {
                 reason += "_EMAIL_RESENT";
             }
             response.setFailureReason(reason);
+            getLogger().info("Login failed. User [{}] not verified.", loginBody.getUsername());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         } catch (EmailFailureException ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

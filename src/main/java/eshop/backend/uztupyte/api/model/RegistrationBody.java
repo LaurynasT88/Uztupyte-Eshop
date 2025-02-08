@@ -1,5 +1,6 @@
 package eshop.backend.uztupyte.api.model;
 
+import eshop.backend.uztupyte.model.RoleName;
 import jakarta.validation.constraints.*;
 
 public class RegistrationBody {
@@ -18,8 +19,7 @@ public class RegistrationBody {
     @NotBlank
     @NotNull
     @Email
-    private
-    String email;
+    private String email;
 
     @NotBlank
     @NotNull
@@ -28,6 +28,18 @@ public class RegistrationBody {
     @NotBlank
     @NotNull
     private String lastName;
+
+
+    @NotNull
+    private RoleName role;
+
+    public RoleName getRole() {
+        return role;
+    }
+
+    public void setRole(RoleName role) {
+        this.role = role;
+    }
 
     public String getUsername() {
         return username;
