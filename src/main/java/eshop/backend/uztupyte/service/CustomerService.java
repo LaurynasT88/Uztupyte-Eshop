@@ -11,6 +11,7 @@ import eshop.backend.uztupyte.exception.UserNotVerifiedException;
 import eshop.backend.uztupyte.model.Customer;
 import eshop.backend.uztupyte.model.dao.CustomerDAO;
 import eshop.backend.uztupyte.model.dao.VerificationTokenDAO;
+import eshop.backend.uztupyte.util.Loggable;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,7 @@ import java.util.Optional;
 
 
 @Service
-public class CustomerService {
+public class CustomerService implements Loggable {
 
     private CustomerDAO customerDAO;
     private VerificationTokenDAO verificationTokenDAO;
@@ -73,6 +74,7 @@ public class CustomerService {
 
 
     public String loginCustomer(LoginBody loginBody) throws UserNotVerifiedException, EmailFailureException {
+
         Optional<Customer> opCustomer = customerDAO.findByUsernameIgnoreCase(loginBody.getUsername());
         if (opCustomer.isPresent()) {
             Customer customer = opCustomer.get();
@@ -94,6 +96,8 @@ public class CustomerService {
 
             }
         }
+
+        getLogger().info("Customer [{}] not found", loginBody.getUsername());
         return null;
     }
 
