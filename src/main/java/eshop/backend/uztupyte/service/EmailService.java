@@ -1,8 +1,8 @@
 package eshop.backend.uztupyte.service;
 
-import eshop.backend.uztupyte.model.VerificationToken;
 import eshop.backend.uztupyte.exception.EmailFailureException;
 import eshop.backend.uztupyte.model.Customer;
+import eshop.backend.uztupyte.model.VerificationToken;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
@@ -30,7 +30,7 @@ public class EmailService {
         return simpleMailMessage;
     }
 
-    public void sendVerificationEmail (VerificationToken verificationToken) throws EmailFailureException {
+    public void sendVerificationEmail(VerificationToken verificationToken) {
         SimpleMailMessage message = makeMailMessage();
         message.setTo(verificationToken.getCustomer().getEmail());
         message.setSubject("Verify your email to active your account");

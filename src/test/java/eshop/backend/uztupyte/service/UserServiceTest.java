@@ -6,25 +6,24 @@ import com.icegreen.greenmail.util.ServerSetupTest;
 import eshop.backend.uztupyte.api.model.LoginBody;
 import eshop.backend.uztupyte.api.model.PasswordResetBody;
 import eshop.backend.uztupyte.api.model.RegistrationBody;
+import eshop.backend.uztupyte.exception.EmailFailureException;
 import eshop.backend.uztupyte.exception.EmailNotFoundException;
+import eshop.backend.uztupyte.exception.UserAlreadyExistsException;
+import eshop.backend.uztupyte.exception.UserEmailNotVerifiedException;
 import eshop.backend.uztupyte.model.Customer;
 import eshop.backend.uztupyte.model.VerificationToken;
-import eshop.backend.uztupyte.exception.EmailFailureException;
-import eshop.backend.uztupyte.exception.UserAlreadyExistsException;
-import eshop.backend.uztupyte.exception.UserNotVerifiedException;
 import eshop.backend.uztupyte.model.dao.CustomerDAO;
 import eshop.backend.uztupyte.model.dao.VerificationTokenDAO;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.List;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -71,7 +70,7 @@ public class UserServiceTest {
 
     @Test
     @Transactional
-    public void testLoginUser() throws UserNotVerifiedException, EmailFailureException {
+    public void testLoginUser() throws UserEmailNotVerifiedException, EmailFailureException {
         LoginBody body = new LoginBody();
         body.setUsername("UserA-NotExists");
         body.setPassword("PasswordA123-BadPassword");
@@ -85,14 +84,14 @@ public class UserServiceTest {
         try {
             customerService.loginCustomer(body);
             Assertions.assertTrue(false, "User should not have email verified.");
-        } catch (UserNotVerifiedException ex) {
+        } catch (UserEmailNotVerifiedException ex) {
             Assertions.assertTrue(ex.isNewEmailSent(), "Email verification should be sent.");
             Assertions.assertEquals(1, greenMailExtension.getReceivedMessages().length);
         }
         try {
             customerService.loginCustomer(body);
             Assertions.assertTrue(false, "User should not have email verified.");
-        } catch (UserNotVerifiedException ex) {
+        } catch (UserEmailNotVerifiedException ex) {
             Assertions.assertFalse(ex.isNewEmailSent(), "Email verification should not be resent.");
             Assertions.assertEquals(1, greenMailExtension.getReceivedMessages().length);
         }
@@ -108,7 +107,7 @@ public class UserServiceTest {
         try {
             customerService.loginCustomer(body);
             Assertions.assertTrue(false, "User should not have email verified.");
-        } catch (UserNotVerifiedException ex) {
+        } catch (UserEmailNotVerifiedException ex) {
             List<VerificationToken> tokens = verificationTokenDAO.findByCustomer_IdOrderByIdDesc(2L);
             String token = tokens.get(0).getToken();
             Assertions.assertTrue(customerService.verifyCustomer(token), "Token should be valid");

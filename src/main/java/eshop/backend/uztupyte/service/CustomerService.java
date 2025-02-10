@@ -6,7 +6,9 @@ import eshop.backend.uztupyte.api.model.RegistrationBody;
 import eshop.backend.uztupyte.exception.EmailFailureException;
 import eshop.backend.uztupyte.exception.EmailNotFoundException;
 import eshop.backend.uztupyte.exception.UserAlreadyExistsException;
-import eshop.backend.uztupyte.exception.UserNotVerifiedException;
+import eshop.backend.uztupyte.exception.UserEmailNotVerifiedException;
+import eshop.backend.uztupyte.exception.UserNotFound;
+import eshop.backend.uztupyte.exception.UserPasswordNotVerifiedException;
 import eshop.backend.uztupyte.model.Customer;
 import eshop.backend.uztupyte.model.UserRole;
 import eshop.backend.uztupyte.model.VerificationToken;
@@ -14,33 +16,36 @@ import eshop.backend.uztupyte.model.dao.CustomerDAO;
 import eshop.backend.uztupyte.model.dao.VerificationTokenDAO;
 import eshop.backend.uztupyte.util.Loggable;
 import jakarta.transaction.Transactional;
-import org.springframework.stereotype.Service;
-
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.stereotype.Service;
 
 
 @Service
 public class CustomerService implements Loggable {
 
-    private CustomerDAO customerDAO;
-    private VerificationTokenDAO verificationTokenDAO;
-    private EncryptionService encryptionService;
-    private JWTService jwtService;
-    private EmailService emailService;
+    private final CustomerDAO customerDAO;
+    private final VerificationTokenDAO verificationTokenDAO;
+    private final EncryptionService encryptionService;
+    private final JWTService jwtService;
+    private final EmailService emailService;
+    private final RegistrationProperties registrationProperties;
 
 
-    public CustomerService(CustomerDAO customerDAO, EncryptionService encryptionService, JWTService jwtService,
-                           EmailService emailService, VerificationTokenDAO verificationTokenDAO) {
+    public CustomerService(CustomerDAO customerDAO,
+            EncryptionService encryptionService,
+            JWTService jwtService,
+            EmailService emailService,
+            VerificationTokenDAO verificationTokenDAO,
+            RegistrationProperties registrationProperties) {
 
         this.customerDAO = customerDAO;
         this.encryptionService = encryptionService;
         this.jwtService = jwtService;
         this.emailService = emailService;
         this.verificationTokenDAO = verificationTokenDAO;
-
-
+        this.registrationProperties = registrationProperties;
     }
 
 
@@ -57,8 +62,13 @@ public class CustomerService implements Loggable {
         customer.setLastName(registrationBody.getLastName());
         customer.setUsername(registrationBody.getUsername());
         customer.setPassword(encryptionService.encryptPassword(registrationBody.getPassword()));
-        VerificationToken verificationToken = createVerificationToken(customer);
-        emailService.sendVerificationEmail(verificationToken);
+
+        if (registrationProperties.isAutoVerificationEnabled()) {
+            customer.setEmailVerified(true);
+        } else {
+            VerificationToken verificationToken = createVerificationToken(customer);
+            emailService.sendVerificationEmail(verificationToken);
+        }
 
         Customer savedCustomer = customerDAO.save(customer);
         UserRole userRole = new UserRole();
@@ -69,42 +79,14 @@ public class CustomerService implements Loggable {
         return customerDAO.save(savedCustomer);
     }
 
-    private VerificationToken createVerificationToken(Customer customer) {
-        VerificationToken verificationToken = new VerificationToken();
-        verificationToken.setToken(jwtService.generateVerificationJWT(customer));
-        verificationToken.setCreatedTimestamp(new Timestamp(System.currentTimeMillis()));
-        verificationToken.setCustomer(customer);
-        customer.getVerificationTokens().add(verificationToken);
-        return verificationToken;
-    }
+    public String loginCustomer(LoginBody loginBody) {
 
+        Customer customer = customerDAO.findByUsernameIgnoreCase(loginBody.getUsername())
+                .orElseThrow(() -> new UserNotFound(loginBody.getUsername()));
 
-    public String loginCustomer(LoginBody loginBody) throws UserNotVerifiedException, EmailFailureException {
-
-        Optional<Customer> opCustomer = customerDAO.findByUsernameIgnoreCase(loginBody.getUsername());
-        if (opCustomer.isPresent()) {
-            Customer customer = opCustomer.get();
-            if (encryptionService.verifyPassword(loginBody.getPassword(), customer.getPassword())) {
-                if (customer.isEmailVerified()) {
-                    return jwtService.generateJWT(customer);
-                } else {
-                    List<VerificationToken> verificationTokens = customer.getVerificationTokens();
-                    boolean resend = verificationTokens.size() == 0 || verificationTokens.get(0).getCreatedTimestamp().before(new Timestamp(System.currentTimeMillis() - (60 * 60 * 1000)));
-                    if (resend) {
-                        VerificationToken verificationToken = createVerificationToken(customer);
-                        verificationTokenDAO.save(verificationToken);
-                        emailService.sendVerificationEmail(verificationToken);
-
-
-                    }
-                    throw new UserNotVerifiedException(resend);
-                }
-
-            }
-        }
-
-        getLogger().info("Customer [{}] not found", loginBody.getUsername());
-        return null;
+        verifyPassword(loginBody.getPassword(), customer);
+        verifyEmail(customer);
+        return jwtService.generateJWT(customer);
     }
 
     @Transactional
@@ -147,6 +129,55 @@ public class CustomerService implements Loggable {
 
     public boolean userHasPermissionToUser(Customer customer, Long id) {
         return customer.getId() == id;
+    }
+
+    private VerificationToken createVerificationToken(Customer customer) {
+
+        VerificationToken verificationToken = new VerificationToken();
+        verificationToken.setToken(jwtService.generateVerificationJWT(customer));
+        verificationToken.setCreatedTimestamp(new Timestamp(System.currentTimeMillis()));
+        verificationToken.setCustomer(customer);
+        customer.getVerificationTokens().add(verificationToken);
+        return verificationToken;
+    }
+
+    private void verifyEmail(Customer customer) {
+
+        if (customer.isEmailVerified()) {
+            getLogger().info("User [{}] email verified.", customer.getId());
+            return;
+        }
+
+        getLogger().error("User [{}] email verification fail.", customer.getId());
+
+        if (shouldResendVerification(customer)) {
+
+            VerificationToken verificationToken = createVerificationToken(customer);
+            verificationTokenDAO.save(verificationToken);
+            emailService.sendVerificationEmail(verificationToken);
+            getLogger().info("User [{}] email verification resent.", customer.getId());
+        }
+
+        throw new UserEmailNotVerifiedException(true);
+    }
+
+    private void verifyPassword(String rawPassword, Customer customer) {
+
+        boolean isVerified = encryptionService.verifyPassword(rawPassword, customer.getPassword());
+
+        if (isVerified) {
+            getLogger().info("User [{}] password verified.", customer.getId());
+        } else {
+            throw new UserPasswordNotVerifiedException(
+                    "User [%s] password verification fail.".formatted(customer.getUsername()));
+        }
+    }
+
+    private boolean shouldResendVerification(Customer customer) {
+
+        List<VerificationToken> tokens = customer.getVerificationTokens();
+        return tokens.isEmpty() || tokens.get(0).getCreatedTimestamp()
+                .before(new Timestamp(System.currentTimeMillis() - (60 * 60 * 1000)));
     }
 
 }
