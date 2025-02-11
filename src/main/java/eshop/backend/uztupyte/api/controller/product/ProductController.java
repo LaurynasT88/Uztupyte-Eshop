@@ -60,7 +60,6 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
-
     @GetMapping("/admin")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Product>> getAdminProductList() {
