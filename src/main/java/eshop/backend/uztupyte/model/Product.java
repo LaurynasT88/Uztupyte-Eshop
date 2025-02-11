@@ -22,7 +22,7 @@ public class Product {
     @Column(name = "price", nullable = false, columnDefinition = "double")
     private Double price;
 
-    @OneToOne(mappedBy = "product", cascade = CascadeType.REMOVE, optional = false, orphanRemoval = true)
+    @OneToOne(mappedBy = "product", cascade = CascadeType.REMOVE, optional = true, orphanRemoval = true)
     private Inventory inventory;
 
     public Inventory getInventory() {

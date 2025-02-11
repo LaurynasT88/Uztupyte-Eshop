@@ -23,8 +23,8 @@ public class WebSecurityConfig {
                 .cors(cors -> cors.disable())
                 .addFilterBefore(jwtRequestFilter, org.springframework.security.web.access.intercept.AuthorizationFilter.class) // Ensure the JWT filter is applied before AuthorizationFilter
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/product", "/auth/register", "/auth/login",
-                                "/auth/verify", "/auth/forgot" , "/auth/reset", "/error").permitAll() // Allow unauthenticated access to these endpoints
+                        .requestMatchers("/product", "/api/products", "/auth/register", "/auth/login",
+                                "/auth/verify", "/auth/forgot", "/auth/reset", "/error" ,"/api/admin/**").permitAll() // Allow unauthenticated access to these endpoints
                         .anyRequest().authenticated() // Require authentication for all other requests
                 );
         return http.build();

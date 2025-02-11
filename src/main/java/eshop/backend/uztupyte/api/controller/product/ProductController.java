@@ -35,35 +35,4 @@ public class ProductController {
         return ResponseEntity.ok(product);
     }
 
-    // Admin-only endpoints for product management
-    @PostMapping("/admin")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product) {
-        Product createdProduct = productService.createProduct(product);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
-    }
-
-    @PutMapping("/admin/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Product> updateProduct(
-            @PathVariable Long id,
-            @Valid @RequestBody Product productDetails
-    ) throws ResourceNotFoundException {
-        Product updatedProduct = productService.updateProduct(id, productDetails);
-        return ResponseEntity.ok(updatedProduct);
-    }
-
-    @DeleteMapping("/admin/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) throws ResourceNotFoundException {
-        productService.deleteProduct(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/admin")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<Product>> getAdminProductList() {
-        List<Product> products = productService.getAllProducts();
-        return ResponseEntity.ok(products);
-    }
 }

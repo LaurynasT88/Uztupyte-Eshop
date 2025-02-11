@@ -9,7 +9,12 @@ import java.util.List;
 
 @Service
 public class ProductService {
-    private ProductDAO productDAO;
+
+    private final ProductDAO productDAO;
+
+    public ProductService(ProductDAO productDAO) {
+        this.productDAO = productDAO;
+    }
 
 
     public Product createProduct(Product product) {
@@ -23,8 +28,8 @@ public class ProductService {
 
 
     public Product getProductById(Long id) throws ResourceNotFoundException {
-        return productDAO.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+        System.out.println("Fetching product with ID: " + id);
+        return productDAO.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
     }
 
 
