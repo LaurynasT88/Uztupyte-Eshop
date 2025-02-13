@@ -86,7 +86,6 @@ public class AuthenticationController implements Loggable {
 
     }
 
-
     @GetMapping("/me")
     public Customer getLoggedInCustomer(@AuthenticationPrincipal Customer customer) {
         return customer;

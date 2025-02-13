@@ -23,6 +23,8 @@ public class JWTService {
     private int expiryInSeconds;
 
     private Algorithm algorithm;
+
+    private static final String ROLES_KEY = "ROLES";
     private static final String USERNAME_KEY = "USERNAME";
     private static final String VERIFICATION_EMAIL_KEY = "VERIFICATION_EMAIL";
     private static final String RESET_PASSWORD_EMAIL_KEY = "RESET_PASSWORD_EMAIL";
@@ -36,7 +38,7 @@ public class JWTService {
     public String generateJWT(Customer customer) {
         return JWT.create()
                 .withClaim(USERNAME_KEY, customer.getUsername())
-                .withClaim("ROLES", getRoles(customer))
+                .withClaim(ROLES_KEY, getRoles(customer))
                 .withExpiresAt(new Date(System.currentTimeMillis() + (1000 * expiryInSeconds)))
                 .withIssuer(issuer)
                 .sign(algorithm);
@@ -77,4 +79,8 @@ public class JWTService {
     }
 
 
+    public List<String> getRoles(String token) {
+        DecodedJWT jwt = JWT.require(algorithm).withIssuer(issuer).build().verify(token);
+        return jwt.getClaim(ROLES_KEY).asList(String.class);
+    }
 }

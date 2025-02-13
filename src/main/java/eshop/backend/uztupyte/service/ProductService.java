@@ -1,11 +1,12 @@
 package eshop.backend.uztupyte.service;
 
+import eshop.backend.uztupyte.api.model.AdminUpdateProductRequest;
 import eshop.backend.uztupyte.exception.ResourceNotFoundException;
+import eshop.backend.uztupyte.model.Inventory;
 import eshop.backend.uztupyte.model.Product;
 import eshop.backend.uztupyte.model.dao.ProductDAO;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProductService {
@@ -33,12 +34,18 @@ public class ProductService {
     }
 
 
-    public Product updateProduct(Long id, Product productDetails) throws ResourceNotFoundException {
+    public Product updateProduct(Long id, AdminUpdateProductRequest request) throws ResourceNotFoundException {
+
         Product existingProduct = getProductById(id);
-        existingProduct.setName(productDetails.getName());
-        existingProduct.setPrice(productDetails.getPrice());
-        existingProduct.setShortDescription(productDetails.getShortDescription());
-        existingProduct.setLongDescription(productDetails.getLongDescription());
+
+        existingProduct.setName(request.getName());
+        existingProduct.setPrice(request.getPrice());
+        existingProduct.setShortDescription(request.getShortDescription());
+        existingProduct.setLongDescription(request.getLongDescription());
+
+        Inventory inventory = existingProduct.getInventory();
+        inventory.setQuantity(request.getQuantity());
+
         return productDAO.save(existingProduct);
     }
 
