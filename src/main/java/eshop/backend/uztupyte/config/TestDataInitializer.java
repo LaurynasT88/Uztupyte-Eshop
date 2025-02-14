@@ -95,9 +95,7 @@ public class TestDataInitializer {
         }
     }
 
-    private void createProduct(String name, String shortDescription, String longDescription, Double price,
-            int quantity) {
-
+    private void createProduct(String name, String shortDescription, String longDescription, Double price, int quantity) {
         if (productDAO.findByName(name).isEmpty()) {
             Product product = new Product();
             product.setName(name);
@@ -105,25 +103,39 @@ public class TestDataInitializer {
             product.setLongDescription(longDescription);
             product.setPrice(price);
 
-            productDAO.save(product);
+            // Save the product first
+            product = productDAO.save(product);
             System.out.println("Inserted product: " + name);
 
-            createInventory(product, quantity);
+            // Create inventory separately
+            Inventory inventory = new Inventory();
+            inventory.setProduct(product);
+            inventory.setQuantity(quantity);
+
+            // Save inventory explicitly
+            inventory = inventoryDAO.save(inventory);
+
+            // Link inventory back to product and save
+            product.setInventory(inventory);
+            productDAO.save(product);
         } else {
             System.out.println("Product already exists: " + name);
         }
     }
 
-    private void createInventory(Product product, int quantity) {
 
+    private Inventory createInventory(Product product, int quantity) {
         if (inventoryDAO.findByProduct(product).isEmpty()) {
             Inventory inventory = new Inventory();
             inventory.setProduct(product);
             inventory.setQuantity(quantity);
-            inventoryDAO.save(inventory);
+            inventory = inventoryDAO.save(inventory); // Save and return the inventory
             System.out.println("Inserted inventory for product: " + product.getName() + " with quantity: " + quantity);
+            return inventory;
         } else {
             System.out.println("Inventory already exists for product: " + product.getName());
+            return inventoryDAO.findByProduct(product).get(); // Return existing inventory
         }
     }
+
 }
