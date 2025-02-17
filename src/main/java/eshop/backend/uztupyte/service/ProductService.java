@@ -4,12 +4,16 @@ import eshop.backend.uztupyte.api.model.AdminUpdateProductRequest;
 import eshop.backend.uztupyte.exception.ResourceNotFoundException;
 import eshop.backend.uztupyte.model.Inventory;
 import eshop.backend.uztupyte.model.Product;
+import eshop.backend.uztupyte.model.ProductImage;
 import eshop.backend.uztupyte.model.dao.InventoryDAO;
 import eshop.backend.uztupyte.model.dao.ProductDAO;
+
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ProductService {
@@ -26,19 +30,19 @@ public class ProductService {
 
 
     public Product createProduct(Product product) {
-        // Save product first
+
         Product savedProduct = productDAO.save(product);
 
-        // Ensure inventory is created and saved separately
+
         if (inventoryDAO.findByProduct(savedProduct).isEmpty()) {
             Inventory inventory = new Inventory();
             inventory.setProduct(savedProduct);
             inventory.setQuantity(0); // Default quantity to 0 if none provided
 
-            // Save inventory explicitly
+
             inventory = inventoryDAO.save(inventory);
 
-            // Link inventory back to product and save
+
             savedProduct.setInventory(inventory);
             savedProduct = productDAO.save(savedProduct);
         }
@@ -77,5 +81,18 @@ public class ProductService {
     public void deleteProduct(Long id) throws ResourceNotFoundException {
         Product product = getProductById(id);
         productDAO.delete(product);
+    }
+    public Product addImageToProduct(Long productId, MultipartFile file) throws IOException {
+        Product product = productDAO.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        byte[] imageBytes = file.getBytes();
+
+        ProductImage image = new ProductImage();
+        image.setImageData(imageBytes);
+        image.setProduct(product);
+
+        product.getImages().add(image);
+        return productDAO.save(product);
     }
 }

@@ -2,6 +2,8 @@ package eshop.backend.uztupyte.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "product")
 public class Product {
@@ -24,6 +26,9 @@ public class Product {
 
     @OneToOne(mappedBy = "product", cascade = CascadeType.REMOVE, optional = true, orphanRemoval = true)
     private Inventory inventory;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductImage> images;
 
     public Inventory getInventory() {
         return inventory;
@@ -71,6 +76,14 @@ public class Product {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public List<ProductImage> getImages() {
+        return images;
+    }
+
+    public void setImages(List<ProductImage> images) {
+        this.images = images;
     }
 
 }
