@@ -89,7 +89,7 @@ public class ProductService {
         byte[] imageBytes = file.getBytes();
 
         ProductImage image = new ProductImage();
-        image.setImageData(imageBytes);
+//        image.setImageData(imageBytes);
         image.setProduct(product);
 
         product.getImages().add(image);

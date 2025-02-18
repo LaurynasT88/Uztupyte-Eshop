@@ -7,12 +7,12 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "verification_token")
 public class VerificationToken {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Lob
     @Column(name = "token", nullable = false, unique = true)
     private String token;
 
@@ -23,12 +23,20 @@ public class VerificationToken {
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
-    public Customer getCustomer() {
-        return customer;
+    public Long getId() {
+        return id;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public Timestamp getCreatedTimestamp() {
@@ -39,22 +47,11 @@ public class VerificationToken {
         this.createdTimestamp = createdTimestamp;
     }
 
-
-
-    public String getToken() {
-        return token;
+    public Customer getCustomer() {
+        return customer;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
 }

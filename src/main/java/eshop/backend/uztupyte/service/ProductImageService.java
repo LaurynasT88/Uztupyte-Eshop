@@ -31,7 +31,7 @@ public class ProductImageService {
         byte[] imageBytes = file.getBytes();
 
         ProductImage image = new ProductImage();
-        image.setImageData(imageBytes);
+        //image.setImageData(imageBytes);
         image.setProduct(product);
         return productImageDAO.save(image);
     }
@@ -48,7 +48,7 @@ public class ProductImageService {
     public byte[] getImageById(Long imageId) throws ResourceNotFoundException {
         ProductImage image = productImageDAO.findById(imageId)
                 .orElseThrow(() -> new ResourceNotFoundException("Image not found"));
-        return image.getImageData();
+        return null;
     }
 
     public byte[] getProductImage(Long productId) {
