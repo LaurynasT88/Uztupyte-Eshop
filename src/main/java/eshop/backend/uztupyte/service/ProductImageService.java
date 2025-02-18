@@ -50,4 +50,8 @@ public class ProductImageService {
                 .orElseThrow(() -> new ResourceNotFoundException("Image not found"));
         return image.getImageData();
     }
+
+    public byte[] getProductImage(Long productId) {
+        return null;
+    }
 }
