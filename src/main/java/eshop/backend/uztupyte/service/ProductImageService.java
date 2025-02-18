@@ -54,4 +54,8 @@ public class ProductImageService {
     public byte[] getProductImage(Long productId) {
         return null;
     }
+
+    public void uploadProductImage(Long productId, MultipartFile file) {
+
+    }
 }
