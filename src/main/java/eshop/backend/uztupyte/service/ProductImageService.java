@@ -60,7 +60,18 @@ public class ProductImageService implements Loggable {
     }
 
     public byte[] getProductImage(Long productId) {
-        return null;
+
+        Product product = productDAO.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product [%s] not found.".formatted(productId)));
+
+        if (product.getImages().isEmpty()) {
+            throw new ResourceNotFoundException("Product [%s] image not found.".formatted(productId));
+        }
+
+        Long firstImageId = product.getImages().getFirst().getId();
+
+        return s3Service.getObject(s3Buckets.getProduct(),
+                "product-images/%s/%s".formatted(product.getId(), firstImageId));
     }
 
     public void uploadProductImage(Long productId, MultipartFile file) {

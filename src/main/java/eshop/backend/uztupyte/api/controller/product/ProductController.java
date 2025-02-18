@@ -41,8 +41,8 @@ public class ProductController {
 
 
     @GetMapping(
-            value = "/{productId}/images",
-            produces = MediaType.IMAGE_JPEG_VALUE
+            value = "/{productId}/images"
+            //produces = MediaType.IMAGE_JPEG_VALUE
     )
     public byte[] getProductImage(@PathVariable("productId") Long productId) {
 
