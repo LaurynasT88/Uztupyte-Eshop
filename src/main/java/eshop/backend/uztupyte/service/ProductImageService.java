@@ -68,7 +68,7 @@ public class ProductImageService implements Loggable {
             throw new ResourceNotFoundException("Product [%s] image not found.".formatted(productId));
         }
 
-        Long firstImageId = product.getImages().getFirst().getId();
+        String firstImageId = product.getImages().getFirst().getProductImageId();
 
         return s3Service.getObject(s3Buckets.getProduct(),
                 "product-images/%s/%s".formatted(product.getId(), firstImageId));
