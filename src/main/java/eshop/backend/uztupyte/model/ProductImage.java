@@ -9,14 +9,13 @@ public class ProductImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Lob  // Stores binary image data
-    private byte[] imageData;
+    @Column(name = "product_image_id", unique = true)
+    private String productImageId;
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -25,12 +24,12 @@ public class ProductImage {
         this.id = id;
     }
 
-    public byte[] getImageData() {
-        return imageData;
+    public String getProductImageId() {
+        return productImageId;
     }
 
-    public void setImageData(byte[] imageData) {
-        this.imageData = imageData;
+    public void setProductImageId(String productImageId) {
+        this.productImageId = productImageId;
     }
 
     public Product getProduct() {
