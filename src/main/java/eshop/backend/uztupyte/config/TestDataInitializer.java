@@ -56,11 +56,11 @@ public class TestDataInitializer {
 
     private void insertProducts() {
 
-        createProduct("Laptop X1", "Powerful Laptop", "A high-end laptop for professionals.", 1200.99, 10);
-        createProduct("Smartphone Pro", "Flagship Smartphone", "A top-tier smartphone with cutting-edge features.",
-                999.99, 20);
-        createProduct("Wireless Headphones", "Noise Cancelling Headphones",
-                "Premium headphones with excellent sound quality.", 249.99, 30);
+        createProduct("Dream Catcher", "Handmade from recycled materials.p", "Handmade dream catcher, home decor, wall decor, bedroom decor, Witchy artwork, Boho style, Spiritual atmosphere, Zero waste, Sustainable art", 24.59, 1);
+        createProduct("Woman Painting", "Painting of the woman", "ORIGINAL Women hand-painted acrylic art, Bedroom wall decor, Relaxing half nude female back, Moody portrait painting, Feminine power, Relax",
+                131.13, 1);
+        createProduct("Collage 'War Art' ", "PRINTABLE Collage",
+                "PRINTABLE Collage, War art, Hand-cut artwork, Sustainable magazine scrap print, Digital clipping poster, European artist works, Politic top.", 1.65, 1);
     }
 
     private void createCustomer(String email, String username, String firstName,
