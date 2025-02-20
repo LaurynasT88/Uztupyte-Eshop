@@ -65,7 +65,7 @@ public class ProductImageService implements Loggable {
                 .orElseThrow(() -> new ResourceNotFoundException("Product [%s] not found.".formatted(productId)));
 
         if (product.getImages().isEmpty()) {
-            throw new ResourceNotFoundException("Product [%s] image not found.".formatted(productId));
+            return new byte[0];
         }
 
         String firstImageId = product.getImages().getFirst().getProductImageId();
