@@ -3,11 +3,10 @@ package eshop.backend.uztupyte.service;
 import eshop.backend.uztupyte.api.model.LoginBody;
 import eshop.backend.uztupyte.api.model.PasswordResetBody;
 import eshop.backend.uztupyte.api.model.RegistrationBody;
-import eshop.backend.uztupyte.exception.EmailFailureException;
 import eshop.backend.uztupyte.exception.EmailNotFoundException;
+import eshop.backend.uztupyte.exception.ResourceNotFoundException;
 import eshop.backend.uztupyte.exception.UserAlreadyExistsException;
 import eshop.backend.uztupyte.exception.UserEmailNotVerifiedException;
-import eshop.backend.uztupyte.exception.UserNotFound;
 import eshop.backend.uztupyte.exception.UserPasswordNotVerifiedException;
 import eshop.backend.uztupyte.model.Customer;
 import eshop.backend.uztupyte.model.UserRole;
@@ -49,7 +48,7 @@ public class CustomerService implements Loggable {
     }
 
 
-    public Customer registerCustomer(RegistrationBody registrationBody) throws EmailFailureException {
+    public Customer registerCustomer(RegistrationBody registrationBody) {
 
         if (customerDAO.findByEmailIgnoreCase(registrationBody.getEmail()).isPresent()
                 || customerDAO.findByUsernameIgnoreCase(registrationBody.getUsername()).isPresent()) {
@@ -83,7 +82,8 @@ public class CustomerService implements Loggable {
     public String loginCustomer(LoginBody loginBody) {
 
         Customer customer = customerDAO.findByUsernameIgnoreCase(loginBody.getUsername())
-                .orElseThrow(() -> new UserNotFound(loginBody.getUsername()));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "User [%s] not found".formatted(loginBody.getUsername())));
 
         verifyPassword(loginBody.getPassword(), customer);
         verifyEmail(customer);
@@ -106,7 +106,7 @@ public class CustomerService implements Loggable {
         return false;
     }
 
-    public void forgotPassword(String email) throws EmailNotFoundException, EmailFailureException {
+    public void forgotPassword(String email) {
         Optional<Customer> opCustomer = customerDAO.findByEmailIgnoreCase(email);
         if (opCustomer.isPresent()) {
             Customer customer = opCustomer.get();
@@ -145,21 +145,23 @@ public class CustomerService implements Loggable {
     private void verifyEmail(Customer customer) {
 
         if (customer.isEmailVerified()) {
-            getLogger().info("User [{}] email verified.", customer.getId());
+            getLogger().info("User [{}] email verified", customer.getId());
             return;
         }
 
-        getLogger().error("User [{}] email verification fail.", customer.getId());
+        getLogger().error("User [{}] email verification fail", customer.getId());
 
+        boolean isEmailResent = false;
         if (shouldResendVerification(customer)) {
-
             VerificationToken verificationToken = createVerificationToken(customer);
             verificationTokenDAO.save(verificationToken);
             emailService.sendVerificationEmail(verificationToken);
-            getLogger().info("User [{}] email verification resent.", customer.getId());
+            isEmailResent = true;
+            getLogger().info("User [{}] email verification resent", customer.getId());
         }
 
-        throw new UserEmailNotVerifiedException(true);
+        throw new UserEmailNotVerifiedException(
+                "User [%s] email not verified".formatted(customer.getUsername()), isEmailResent);
     }
 
     private void verifyPassword(String rawPassword, Customer customer) {

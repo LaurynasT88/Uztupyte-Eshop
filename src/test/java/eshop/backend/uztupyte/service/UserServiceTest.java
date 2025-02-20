@@ -6,7 +6,6 @@ import com.icegreen.greenmail.util.ServerSetupTest;
 import eshop.backend.uztupyte.api.model.LoginBody;
 import eshop.backend.uztupyte.api.model.PasswordResetBody;
 import eshop.backend.uztupyte.api.model.RegistrationBody;
-import eshop.backend.uztupyte.exception.EmailFailureException;
 import eshop.backend.uztupyte.exception.EmailNotFoundException;
 import eshop.backend.uztupyte.exception.UserAlreadyExistsException;
 import eshop.backend.uztupyte.exception.UserEmailNotVerifiedException;
@@ -70,7 +69,7 @@ public class UserServiceTest {
 
     @Test
     @Transactional
-    public void testLoginUser() throws UserEmailNotVerifiedException, EmailFailureException {
+    public void testLoginUser() {
         LoginBody body = new LoginBody();
         body.setUsername("UserA-NotExists");
         body.setPassword("PasswordA123-BadPassword");
@@ -85,21 +84,21 @@ public class UserServiceTest {
             customerService.loginCustomer(body);
             Assertions.assertTrue(false, "User should not have email verified.");
         } catch (UserEmailNotVerifiedException ex) {
-            Assertions.assertTrue(ex.isNewEmailSent(), "Email verification should be sent.");
+            Assertions.assertTrue(ex.isEmailResent(), "Email verification should be sent.");
             Assertions.assertEquals(1, greenMailExtension.getReceivedMessages().length);
         }
         try {
             customerService.loginCustomer(body);
             Assertions.assertTrue(false, "User should not have email verified.");
         } catch (UserEmailNotVerifiedException ex) {
-            Assertions.assertFalse(ex.isNewEmailSent(), "Email verification should not be resent.");
+            Assertions.assertFalse(ex.isEmailResent(), "Email verification should not be resent.");
             Assertions.assertEquals(1, greenMailExtension.getReceivedMessages().length);
         }
     }
 
     @Test
     @Transactional
-    public void testVerifyUser() throws EmailFailureException {
+    public void testVerifyUser() {
         Assertions.assertFalse(customerService.verifyCustomer("Bad Token"),"Token that is bad or does not exist should return false. " );
         LoginBody body = new LoginBody();
         body.setUsername("UserB");

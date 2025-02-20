@@ -25,37 +25,38 @@ public class EmailService {
     }
 
     private SimpleMailMessage makeMailMessage() {
+
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setFrom(fromAddress);
         return simpleMailMessage;
     }
 
     public void sendVerificationEmail(VerificationToken verificationToken) {
+
         SimpleMailMessage message = makeMailMessage();
         message.setTo(verificationToken.getCustomer().getEmail());
         message.setSubject("Verify your email to active your account");
-        message.setText("Please follow the link below to verify your email to activate your account. \n" + url + "/auth/verify?token=" + verificationToken.getToken()); //TODO ADD WHEN FRONT END IS DONE
-        try{
-                javaMailSender.send(message);
-                }catch (MailException ex){
+        message.setText("Please follow the link below to verify your email to activate your account. \n" + url
+                + "/auth/verify?token=" + verificationToken.getToken());
+
+        try {
+            javaMailSender.send(message);
+        } catch (MailException ex) {
             throw new EmailFailureException();
         }
     }
 
-    public void sendPasswordResetEmail(Customer user, String token) throws EmailFailureException {
+    public void sendPasswordResetEmail(Customer user, String token) {
+
         SimpleMailMessage message = makeMailMessage();
         message.setTo(user.getEmail());
         message.setSubject("Your password reset request link. ");
         message.setText("You requested a password reset on our website. Please " + "find the link below to be able to reset your password." +
                 "\n" + url + "/auth/reset?token=" +token);
-        try{
+        try {
             javaMailSender.send(message);
         } catch (MailException ex){
             throw new EmailFailureException();
         }
-
-
     }
-
-
 }

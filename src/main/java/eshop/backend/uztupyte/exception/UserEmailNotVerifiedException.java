@@ -2,14 +2,16 @@ package eshop.backend.uztupyte.exception;
 
 public class UserEmailNotVerifiedException extends RuntimeException {
 
-    private final boolean newEmailSent;
+    private final boolean isEmailResent;
 
-    public UserEmailNotVerifiedException(boolean newEmailSent) {
-        this.newEmailSent = newEmailSent;
+    public UserEmailNotVerifiedException(String message, boolean isEmailResent) {
+
+        super(message);
+        this.isEmailResent = isEmailResent;
     }
 
+    public boolean isEmailResent() {
 
-    public boolean isNewEmailSent() {
-        return newEmailSent;
+        return isEmailResent;
     }
 }
