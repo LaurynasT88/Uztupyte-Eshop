@@ -25,5 +25,5 @@ public class OrderController {
     public List<WebOrder> getOrders(@AuthenticationPrincipal Customer customer) {
         return orderService.getOrders(customer);
     }
-
+    //TODO make order place endpoint protected with user role
 }
