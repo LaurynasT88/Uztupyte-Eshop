@@ -49,13 +49,12 @@ public class CustomerService implements Loggable {
     }
 
 
-    public Customer registerCustomer(RegistrationBody registrationBody) throws UserAlreadyExistsException, EmailFailureException {
+    public Customer registerCustomer(RegistrationBody registrationBody) throws EmailFailureException {
 
         if (customerDAO.findByEmailIgnoreCase(registrationBody.getEmail()).isPresent()
                 || customerDAO.findByUsernameIgnoreCase(registrationBody.getUsername()).isPresent()) {
-            throw new UserAlreadyExistsException();
+            throw new UserAlreadyExistsException("User [%s] already exists".formatted(registrationBody.getUsername()));
         }
-
         Customer customer = new Customer();
         customer.setEmail(registrationBody.getEmail());
         customer.setFirstName(registrationBody.getFirstName());
@@ -64,10 +63,12 @@ public class CustomerService implements Loggable {
         customer.setPassword(encryptionService.encryptPassword(registrationBody.getPassword()));
 
         if (registrationProperties.isAutoVerificationEnabled()) {
+            getLogger().info("Auto-verification enabled. User [{}] auto-verified.", registrationBody.getUsername());
             customer.setEmailVerified(true);
         } else {
             VerificationToken verificationToken = createVerificationToken(customer);
             emailService.sendVerificationEmail(verificationToken);
+            getLogger().info("Verification email sent to user [{}].", registrationBody.getUsername());
         }
 
         Customer savedCustomer = customerDAO.save(customer);
