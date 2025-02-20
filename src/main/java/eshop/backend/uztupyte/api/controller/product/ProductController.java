@@ -1,17 +1,15 @@
 package eshop.backend.uztupyte.api.controller.product;
 
-import eshop.backend.uztupyte.exception.ResourceNotFoundException;
 import eshop.backend.uztupyte.model.Product;
 import eshop.backend.uztupyte.service.ProductImageService;
 import eshop.backend.uztupyte.service.ProductService;
+import java.util.List;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
@@ -34,8 +32,8 @@ public class ProductController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) throws ResourceNotFoundException {
-        Product product = productService.getProductById(id);
+    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+        Product product = productService.getProductByIdOrThrow(id);
         return ResponseEntity.ok(product);
     }
 

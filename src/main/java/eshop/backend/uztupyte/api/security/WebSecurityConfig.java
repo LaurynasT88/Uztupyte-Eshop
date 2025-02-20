@@ -5,7 +5,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -15,10 +17,17 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableMethodSecurity
 public class WebSecurityConfig {
 
-    private JWTRequestFilter jwtRequestFilter;
+    private final JWTRequestFilter jwtRequestFilter;
+    private final CustomAuthenticationEntryPointHandler customAuthenticationEntryPointHandler;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
-    public WebSecurityConfig(JWTRequestFilter jwtRequestFilter) {
+    public WebSecurityConfig(JWTRequestFilter jwtRequestFilter,
+            CustomAuthenticationEntryPointHandler customAuthenticationEntryPointHandler,
+            CustomAccessDeniedHandler customAccessDeniedHandler) {
+
         this.jwtRequestFilter = jwtRequestFilter;
+        this.customAuthenticationEntryPointHandler = customAuthenticationEntryPointHandler;
+        this.customAccessDeniedHandler = customAccessDeniedHandler;
     }
 
 
@@ -26,15 +35,17 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/api/products/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .addFilterBefore(jwtRequestFilter,
-                        org.springframework.security.web.access.intercept.AuthorizationFilter.class);
+                        .anyRequest().authenticated())
+                .addFilterBefore(jwtRequestFilter, AuthorizationFilter.class)
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(customAuthenticationEntryPointHandler)  // Handle 401 Unauthorized
+                        .accessDeniedHandler(customAccessDeniedHandler)// Handle 403 Forbidden
+                );
 
         return http.build();
     }

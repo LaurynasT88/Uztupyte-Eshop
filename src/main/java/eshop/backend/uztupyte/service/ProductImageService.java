@@ -7,13 +7,10 @@ import eshop.backend.uztupyte.model.ProductImage;
 import eshop.backend.uztupyte.model.dao.ProductDAO;
 import eshop.backend.uztupyte.model.dao.ProductImageDAO;
 import eshop.backend.uztupyte.util.Loggable;
-import jakarta.transaction.Transactional;
+import java.io.IOException;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.UUID;
 
 @Service
 public class ProductImageService implements Loggable {
@@ -29,34 +26,6 @@ public class ProductImageService implements Loggable {
         this.productDAO = productDAO;
         this.s3Service = s3Service;
         this.s3Buckets = s3Buckets;
-    }
-
-    @Transactional
-    public ProductImage addImageToProduct(Long productId, MultipartFile file) throws ResourceNotFoundException, IOException {
-        Product product = productDAO.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
-
-        byte[] imageBytes = file.getBytes();
-
-        ProductImage image = new ProductImage();
-        //image.setImageData(imageBytes);
-        image.setProduct(product);
-        return productImageDAO.save(image);
-    }
-
-    @Transactional
-    public void deleteImage(Long imageId) {
-        productImageDAO.deleteById(imageId);
-    }
-
-    public List<ProductImage> getImagesForProduct(Long productId) {
-        return productImageDAO.findByProductId(productId);
-    }
-
-    public byte[] getImageById(Long imageId) throws ResourceNotFoundException {
-        ProductImage image = productImageDAO.findById(imageId)
-                .orElseThrow(() -> new ResourceNotFoundException("Image not found"));
-        return null;
     }
 
     public byte[] getProductImage(Long productId) {
