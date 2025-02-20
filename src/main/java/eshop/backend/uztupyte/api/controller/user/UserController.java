@@ -67,7 +67,7 @@ public class UserController {
         return ResponseEntity.badRequest().build();
     }
 
-
+    //TODO make getcustomers meth
 
 
     private boolean userHasPermission(Customer customer, Long id) {

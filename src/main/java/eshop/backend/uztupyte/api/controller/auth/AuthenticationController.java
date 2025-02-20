@@ -55,11 +55,11 @@ public class AuthenticationController implements Loggable {
         } catch (UserEmailNotVerifiedException ex) {
             LoginResponse response = new LoginResponse();
             response.setSuccess(false);
-            String reason = "USER_NOT_VERIFIED";
+            String reason = "User not verified. Please check your email for the verification link.";
             if (ex.isNewEmailSent()) {
-                reason += "_EMAIL_RESENT";
+                reason += " A new verification email has been resent.";
             }
-            response.setFailureReason(reason);
+            response.setFailureReason(reason);  // Setting the more specific error message here
             getLogger().info("Login failed. User [{}] not verified.", loginBody.getUsername());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         } catch (EmailFailureException ex) {
@@ -74,6 +74,7 @@ public class AuthenticationController implements Loggable {
             return ResponseEntity.ok(response);
         }
     }
+
 
     @PostMapping("/verify")
     public ResponseEntity verifyEmail(@RequestParam String token) {
