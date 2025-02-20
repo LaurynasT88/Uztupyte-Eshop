@@ -81,6 +81,9 @@ public class CustomerService implements Loggable {
 
     public String loginCustomer(LoginBody loginBody) {
 
+        //todo configure GlobalExceptionHandler to return something
+        // more meaningful than 500 on ResourceNotFoundException
+
         Customer customer = customerDAO.findByUsernameIgnoreCase(loginBody.getUsername())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "User [%s] not found".formatted(loginBody.getUsername())));
@@ -92,7 +95,9 @@ public class CustomerService implements Loggable {
 
     @Transactional
     public boolean verifyCustomer(String token) {
+
         Optional<VerificationToken> opToken = verificationTokenDAO.findByToken(token);
+
         if (opToken.isPresent()) {
             VerificationToken verificationToken = opToken.get();
             Customer customer = verificationToken.getCustomer();
@@ -100,9 +105,13 @@ public class CustomerService implements Loggable {
                 customer.setEmailVerified(true);
                 customerDAO.save(customer);
                 verificationTokenDAO.deleteByCustomer(customer);
+                getLogger().info("Email verification successful for user [{}]. ", customer.getUsername());
                 return true;
             }
+            getLogger().info("Email already verified for user [{}].", customer.getUsername());
         }
+
+        getLogger().error("Email verification failed, token not present.");
         return false;
     }
 
